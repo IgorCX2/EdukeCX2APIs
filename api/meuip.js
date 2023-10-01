@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require('cors');
 const router = express.Router();
 const app = express();
+const requestIp = require('request-ip');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -15,7 +16,9 @@ app.use((req, res, next) => {
 });
 
 router.get('/meu-ip', (req, res) => {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    res.send(`Seu endereço IP é: ${ip}`);
+    const clientIp = requestIp.getClientIp(req);
+    return res.json({
+        ip: clientIp
+    });
 });
 module.exports = router;
