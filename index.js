@@ -1,25 +1,27 @@
+const express = require('express');
 const helmet = require('helmet');
-const express = require("express")
-const cors = require("cors");
+const cors = require('cors');
 
-const app = express()
-app.use(express.json())
+const app = express();
+
 app.use(helmet());
-app.use(cors());
-const entradasApi = ['http://localhost:3000','http://aprendacomeduke.com.br', undefined];
-app.use(cors({
+
+const whitelist = ['http://localhost:3000', 'http://aprendacomeduke.com.br', undefined];
+app.use(
+  cors({
     origin: function (origin, callback) {
-        console.log(origin)
-      if (entradasApi.indexOf(origin) !== -1) {
+      if (whitelist.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
         callback(new Error('Acesso negado pela política!'));
       }
-    }
-}));
+    },
+  })
+);
 
-const contaInicial = require("./api/meuip");
-app.use("/api/meuip", contaInicial);
+// Importa as rotas do módulo de contaRegistro
+const contaRegistroRouter = require('./api/contaRegistro');
+app.use('/api/contaRegistro', contaRegistroRouter);
 
-const PORT = process.env.PORT || 8080
-app.listen(PORT, () => console.log(`porta aberta em ${PORT}`))
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`Servidor iniciado na porta ${PORT}`));
