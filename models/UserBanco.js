@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const db = require('./db');
+const UserConfig = require('./UserConfig');
 const UserBanco = db.define('userbanco', {
     id:{
         type: Sequelize.INTEGER,
@@ -9,7 +10,11 @@ const UserBanco = db.define('userbanco', {
     },
     id_user:{
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: UserConfig,
+            key: 'id'
+        }
     },
     tipo:{
         type: Sequelize.ENUM,
@@ -18,16 +23,18 @@ const UserBanco = db.define('userbanco', {
     },
     acao:{
         type: Sequelize.ENUM,
-        values: ['R', 'S'],
-        defaultValue: 'R',
+        values: ['R', 'D'],
+        defaultValue: 'D',
     },
     valor:{
-        type: DataTypes.DECIMAL(10, 2),
-        defaultValue: 0,
+        type: Sequelize.FLOAT,
+        defaultValue: 100,
     },
     descricao:{
         type: Sequelize.STRING(20),
     },
 });
+UserConfig.hasMany(UserBanco, { foreignKey: 'id_user'});
+UserBanco.belongsTo(UserConfig, { foreignKey: 'id_user'});
 UserBanco.sync();
 module.exports = UserBanco;

@@ -12,6 +12,7 @@ const UserConfig = require('../models/UserConfig');
 const UserItems = require('../models/UserItems');
 const { EnviarEmailInicial } = require('./emais_precadatrados');
 const { ErrosVerificar } = require('../gerecial/erros');
+const UserInfo = require('../models/UserInfo');
 
 const router = express.Router();
 router.use(express.urlencoded({ extended: true }));
@@ -73,10 +74,10 @@ router.post('/cadastrar', [body('form.nome').trim().isLength({ min: 3 }).withMes
         const novoUsuarioId = novoUsuario.id
         const criarDado = async (model, msg) => {
           try {
-            await model.create({ id_user: novoUsuarioId })
+            await model.create({ id_user: novoUsuarioId })//id_user
           } catch (error) {
             ErrosVerificar(sanitizedData.form.email, '1_EN#0004', 'EMAIL')
-            console.error(`ERRO 1_EN#0004 ${msg} de ${sanitizedData.form.email}: ${error.message}`)
+            console.error(`ERRO 1_EN#0004 ${msg} de ${sanitizedData.form.email}: ${error}`)
             return res.status(500).json({
               status: `1_CD#0004`,
               msg: `Não foi possivel criar o seu  ${msg}, entre em contato com nossa equipe(você pode usar a plataforma normalmente)`,
@@ -84,7 +85,7 @@ router.post('/cadastrar', [body('form.nome').trim().isLength({ min: 3 }).withMes
           }
         }
         await criarDado(UserBanco, 'banco de dinheiro')
-        await criarDado(UserItems, 'banco de informações')
+        await criarDado(UserInfo, 'banco de informações')
         EnviarEmailInicial(sanitizedData.form.email, sanitizedData.form.nome, '0000', 0)
         console.log(`Usuario ${sanitizedData.form.email} Cadastrado`)
         return res.status(200).json({
@@ -92,7 +93,7 @@ router.post('/cadastrar', [body('form.nome').trim().isLength({ min: 3 }).withMes
           msg: `sucesso`,
         });
       } catch (error) {
-        console.error(`ERRO 1_CD#0001 de ${sanitizedData.form.email}: ${error.message}`)
+        console.error(`ERRO 1_CD#0003 de ${sanitizedData.form.email}: ${error}`)
         ErrosVerificar(sanitizedData.form.email, '1_CD#0003', 'NADA')
         return res.status(500).json({
           status: `1_CD#0003`,
@@ -105,7 +106,7 @@ router.post('/cadastrar', [body('form.nome').trim().isLength({ min: 3 }).withMes
       msg: `Erro, o email informado já está cadastrado!`,
     });
   } catch (error) {
-    console.error(`ERRO 1_CD#0001 de ${sanitizedData.form.email}: ${error.message}`);
+    console.error(`ERRO 1_CD#0001 de ${sanitizedData.form.email}: ${error}`);
     ErrosVerificar(sanitizedData.form.email, '1_CD#0001', 'NADA')
     return res.status(500).json({
       status: '1_CD#0001',
@@ -154,7 +155,7 @@ router.post('/entrar', [body('form.email').trim().isEmail().withMessage('Email i
             });
           }catch(error){
             ErrosVerificar(sanitizedData.form.email, '1_CD#0006', 'EMAIL')
-            console.error(`ERRO 1_CD#0006 de ${sanitizedData.form.email}: ${error.message}`);
+            console.error(`ERRO 1_CD#0006 de ${sanitizedData.form.email}: ${error}`);
             return res.status(500).json({
               status: `1_EN#0006`,
               msg: `Erro de atualização, tente realizar o login novamente`,
@@ -171,7 +172,7 @@ router.post('/entrar', [body('form.email').trim().isEmail().withMessage('Email i
             )
           }catch(error){
             ErrosVerificar(sanitizedData.form.email, '1_EN#0005', 'NADA')
-            console.error(`ERRO 1_EN#0005 de ${sanitizedData.form.email}: ${error.message}`);
+            console.error(`ERRO 1_EN#0005 de ${sanitizedData.form.email}: ${error}`);
             return res.status(500).json({
               status: `1_EN#0005`,
               msg: `Erro de atualização, tente realizar o login novamente`,
@@ -191,9 +192,9 @@ router.post('/entrar', [body('form.email').trim().isEmail().withMessage('Email i
           status: `1_EN#0004`,
           msg: `Senha incorreta. Por favor, verifique suas credenciais.`,
         });
-      }catch(errors){
+      }catch(error){
         ErrosVerificar(sanitizedData.form.email, '1_EN#0003', 'EMAIL')
-        console.error(`ERRO 1_EN#0003 de ${sanitizedData.form.email}: ${errors.message}`);
+        console.error(`ERRO 1_EN#0003 de ${sanitizedData.form.email}: ${error}`);
         return res.status(429).json({
           status: '1_EN#0003',
           msg: 'Você excedeu o limite de tentativas de senha incorreta (mais de 3 vezes). Sua conta está temporariamente bloqueada. Por favor, aguarde 3 minutos antes de tentar novamente ou redefina sua senha.',
@@ -205,7 +206,7 @@ router.post('/entrar', [body('form.email').trim().isEmail().withMessage('Email i
       msg: `Erro, nenhum usuario com este email encontrado`,
     });
   }catch(error){
-    console.error(`ERRO 1_EN#0001 de ${sanitizedData.form.email}: ${error.message}`);
+    console.error(`ERRO 1_EN#0001 de ${sanitizedData.form.email}: ${error}`);
     ErrosVerificar(sanitizedData.form.email, '1_EN#0001', 'NADA')
     return res.status(500).json({
       status: '1_EN#0001',
@@ -253,7 +254,7 @@ router.post('/validar', [body('id').trim().isNumeric().withMessage('Id errado'),
               token: token
             });
           }catch(error){
-            console.error(`ERRO 1_VA#0003 de ${sanitizedData.form.email}: ${error.message}`);
+            console.error(`ERRO 1_VA#0003 de ${sanitizedData.form.email}: ${error}`);
             ErrosVerificar(sanitizedData.form.email, '1_VA#0003', 'NADA')
             return res.status(500).json({
               status: `1_VA#0003`,
@@ -280,7 +281,7 @@ router.post('/validar', [body('id').trim().isNumeric().withMessage('Id errado'),
       msg: `Erro, nenhum usuario com este email encontrado`,
     });
   }catch(error){
-    console.error(`ERRO 1_VA#0001 de ${sanitizedData.form.email}: ${errors.message}`);
+    console.error(`ERRO 1_VA#0001 de ${sanitizedData.form.email}: ${error}`);
     ErrosVerificar(sanitizedData.form.email, '1_VA#0001', 'NADA')
     return res.status(500).json({
       status: '1_VA#0001',
@@ -320,7 +321,7 @@ router.post('/recuperar-senha', [body('form.email').trim().isEmail().withMessage
           });
         }catch(error){
           if (i === 2) {
-            console.error(`ERRO 1_RS#0003 de ${sanitizedData.form.email}: ${error.message}`);
+            console.error(`ERRO 1_RS#0003 de ${sanitizedData.form.email}: ${error}`);
             ErrosVerificar(sanitizedData.form.email, '1_RS#0003', 'NADA')
             return res.status(500).json({
               status: ``,
@@ -335,7 +336,7 @@ router.post('/recuperar-senha', [body('form.email').trim().isEmail().withMessage
       msg: `Erro, nenhum usuario com este email encontrado`,
     });
   }catch(error){
-    console.error(`ERRO 1_RS#0001 de ${sanitizedData.form.email}: ${error.message}`);
+    console.error(`ERRO 1_RS#0001 de ${sanitizedData.form.email}: ${error}`);
     ErrosVerificar(sanitizedData.form.email, '1_RS#0001', 'NADA')
     return res.status(500).json({
       status: '1_RS#0001',
@@ -379,7 +380,7 @@ router.post('/nova-senha', [body('cod').trim().isLength({ min: 14 }).withMessage
               msg: `sucesso`,
             });
           }catch(error){
-            console.error(`ERRO 1_RS#0005 de ${sanitizedData.form.email}: ${error.message}`);
+            console.error(`ERRO 1_RS#0005 de ${sanitizedData.form.email}: ${error}`);
             ErrosVerificar(sanitizedData.form.email, '1_RS#0005', 'NADA')
             return res.status(500).json({
               status: `1_RS#0005`,
@@ -402,7 +403,7 @@ router.post('/nova-senha', [body('cod').trim().isLength({ min: 14 }).withMessage
       msg: `Erro, nenhum usuario encontrado`,
     });
   }catch(error){
-    console.error(`ERRO 1_NS#0001 de ${sanitizedData.form.email}: ${error.message}`);
+    console.error(`ERRO 1_NS#0001 de ${sanitizedData.form.email}: ${error}`);
     ErrosVerificar(sanitizedData.form.email, '1_RS#0001', 'NADA')
     return res.status(500).json({
       status: '1_NS#0001',

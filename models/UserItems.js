@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const db = require('./db');
+const UserConfig = require('./UserConfig');
 const UserItems = db.define('useritems', {
     id:{
         type: Sequelize.INTEGER,
@@ -9,7 +10,11 @@ const UserItems = db.define('useritems', {
     },
     id_user:{
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: UserConfig,
+            key: 'id'
+        }
     },
     item:{
         type: Sequelize.INTEGER,
@@ -18,5 +23,7 @@ const UserItems = db.define('useritems', {
         type: Sequelize.STRING(6)
     },
 });
+UserConfig.hasMany(UserItems, { foreignKey: 'id_user' });
+UserItems.belongsTo(UserConfig, { foreignKey: 'id_user' });
 UserItems.sync();
 module.exports = UserItems;
