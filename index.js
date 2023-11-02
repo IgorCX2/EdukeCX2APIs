@@ -41,5 +41,8 @@ app.use("/api/questoes", questoes);
 const analisarQuestoes = require("./api/analisarQuestoes");
 app.use("/api/analisarQuestoes", analisarQuestoes);
 
+const estudarInfos = require("./api/estudar");
+app.use("/api/estudar", estudarInfos);
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Servidor iniciado na porta ${PORT}`));

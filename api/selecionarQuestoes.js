@@ -104,7 +104,6 @@ router.post('/diagnostico', [body('id').trim().isNumeric().withMessage('Id errad
                 return nivel[0]
             })
             const materiaAvaliar = SortearMaterias(3,nivelMateriasUser)
-            console.log('Materias Avaliadas: '+ materiaAvaliar)
             try{
                 const PlanoEstudosMaterias = await Plano_estudos.findAll({
                     where:{
@@ -221,7 +220,7 @@ router.post('/diagnostico', [body('id').trim().isNumeric().withMessage('Id errad
                             return res.status(200).json({
                                 nivelMaterias: userInfosInicial.nivel,
                                 dificuldadeUser: userInfosInicial.dificuldade?.split(','),
-                                historicoPlano: userInfosInicial.historicoplano,
+                                historicoPlano: userInfosInicial.historicoplano?.split(','),
                                 materias: materiaAvaliar.splice(0,4),
                                 conteudoAvaliar: OrganizarArray(conteudoAvaliar, 6),
                                 nivelConteudo: OrganizarArray(nivelConteudo, 6),

@@ -24,7 +24,7 @@ router.use((req, res, next) => {
 router.get('/', async (req, res) => {
     console.log(req.query.data)
     const dataSeparada = req.query.data.split('/')
-    if(req.query.data.length == 5 && dataSeparada[0].length == 2 && dataSeparada[1].length == 2 && !isNaN(dataSeparada[0]) && !isNaN(dataSeparada[1]) && (Number(dataSeparada[1]) > 0 && Number(dataSeparada[1]) <= 12) && (Number(dataSeparada[0]) > 0 && Number(dataSeparada[0]) <= 31)){
+    if(!isNaN(dataSeparada[0]) && !isNaN(dataSeparada[1]) && (Number(dataSeparada[1]) > 0 && Number(dataSeparada[1]) <= 12) && (Number(dataSeparada[0]) > 0 && Number(dataSeparada[0]) <= 31)){
         const sanitizedData = DOMPurify.sanitize(req.query.data)
         try{
             const fraseBanco = await Frase.findAll({
