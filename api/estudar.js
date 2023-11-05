@@ -123,10 +123,10 @@ router.get('/get-infos', [query('id').isNumeric().withMessage('Id inválido'),qu
     });
 });
 
-router.get('/get-planoALl', async (req, res) => {
+router.get('/get-planoALL', async (req, res) => {
     try{
         const plano = await Plano_estudos.findAll({
-            attributes: ['codigo_plano', 'plano_estudos']
+            attributes: ['plano_estudos', 'materia', 'conteudo', 'conteudo_previo', 'codigo_plano']
         });
         return res.status(200).json({
             Planos: plano,
@@ -140,51 +140,5 @@ router.get('/get-planoALl', async (req, res) => {
         });
     }
 });
-
-router.post('/add-plano', [body('id').isNumeric().withMessage('Id inválido')], async (req, res) => {
-    console.log(req.body)
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ msg: errors.errors[0].msg });
-    }
-    const sanitizedData = {
-          nome: DOMPurify.sanitize(req.body.nome),
-          id: DOMPurify.sanitize(req.body.id)
-    };
-    try{
-        const plano = await Plano_estudos.findOne({
-            where: {
-                plano_estudos: sanitizedData.nome,
-            },
-            attributes: ['codigo_plano', 'plano_estudos']
-        });
-        console.log(plano)
-        if(plano){
-            const infosUsuario = await UserInfo.findOne({
-                where: {
-                    id_user: sanitizedData.id,
-                },
-                attributes: { exclude: ['createdAt', 'updatedAt'] }
-            })
-            const addPlano = infosUsuario.plano.split(',')
-            addPlano.unshift(plano.codigo_plano+'|')
-            UserInfo.update(
-                { plano: addPlano.toString()},
-                { where: { id_user: parseInt(sanitizedData.id)} }
-            )
-        }
-        return res.status(200).json({
-            Planos: 'atualizado'
-        });
-    }catch(error){
-        console.error(`ERRO 1_AP#0001: ${error}`)
-        ErrosVerificar('NINGUEM', '1_AP#0001', 'NADA')
-        return res.status(500).json({
-            status: `1_AP#0021`,
-            msg: 'Não conseguimos pegar os dados do banco de dados'
-        });
-    }
-});
-
 
 module.exports = router;

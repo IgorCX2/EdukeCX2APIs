@@ -306,7 +306,7 @@ router.post('/diagnostico', [body('id').trim().isNumeric().withMessage('Id errad
                                 separaSaberesPlano.splice(separaSaberesPlano.indexOf(separarElemento[0]),1)
                                 if(Number(separarElemento[1]) < 5){
                                     salvarSaber.push(separarElemento[0])
-                                    console.log('sa'+salvarSaber)
+                                    console.log('saber'+salvarSaber)
                                 }
                             }
                         }

@@ -153,4 +153,26 @@ router.post('/cad-nivel', [body('id').trim().isNumeric().withMessage('Id errado'
         });
     }
 });
+router.post('/salva-plano', async (req, res) => {
+    const sanitizedData = {
+        plano: DOMPurify.sanitize(req.body.plano),
+        id: DOMPurify.sanitize(req.body.id)
+     };
+    try{
+        UserInfo.update(
+            { plano: sanitizedData.plano},
+            { where: { id_user: parseInt(sanitizedData.id)} }
+        )
+        return res.status(200).json({
+            status: `200`,
+        });
+    }catch(error){
+        console.error(`ERRO 1_SP#0001: ${error}`)
+        ErrosVerificar('NINGUEM', '1_SP#0001', 'NADA')
+        return res.status(500).json({
+            status: `1_SP#0001`,
+            msg: 'O sistema enfrentou uma dificuldade ao tentar estabelecer uma conexão com o banco de dados!'
+        });
+    }
+});
 module.exports = router;
