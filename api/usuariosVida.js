@@ -36,8 +36,11 @@ router.route('/vida/:id')
         const pegarId = req.params.id;
         const dataAtual = new Date();
         const minhasVidas = []
-        console.log(dataAtual)
+        console.log(pegarId)
+        console.log(!isNaN(Number(pegarId)))
+        console.log(!isNaN(Number("yyy")))
         if(!isNaN(Number(pegarId))){
+            console.log('kkkkkkkkkkkkk')
             try{
                 const conVida = await UserVida.findAll({
                     where:{
@@ -60,6 +63,9 @@ router.route('/vida/:id')
                         minhasVidas.push(0)
                     }
                 })
+                return res.status(200).json({
+                    minhasVidas
+                });
             }catch(error){
                 console.error(`ERRO 1_FR#0002: ${error}`)
                 ErrosVerificar('NINGUEM', '1_FR#0002', 'NADA')
